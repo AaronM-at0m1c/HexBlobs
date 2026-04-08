@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class HexGrid : MonoBehaviour
 {
@@ -8,7 +9,15 @@ public class HexGrid : MonoBehaviour
     [field: SerializeField] public float HexSize { get; private set; }
     [field: SerializeField] public GameObject HexPrefab { get; private set; }
 
+    private Dictionary<Vector2Int, HexTile> tileMap = new();
+    public IReadOnlyDictionary<Vector2Int, HexTile> TileMap => tileMap;
+
     private void Start()
+    {
+        GenerateGrid();
+    }
+
+    private void GenerateGrid()
     {
         for (int z = 0; z < Height; z++)
         {
@@ -17,13 +26,25 @@ public class HexGrid : MonoBehaviour
                 CreateHex(x, z);
             }
         }
+
+        GameManager.Instance.InitializeBoardFromGrid(this);
     }
 
     private void CreateHex(int x, int z)
     {
         Vector3 centerPosition = HexMetrics.Center(HexSize, x, z, Orientation) + transform.position;
-        GameObject tile = Instantiate(HexPrefab, centerPosition, Quaternion.identity, transform);
-        tile.GetComponent<HexTile>().Init(x, z, HexSize, Orientation);
+        GameObject hex = Instantiate(HexPrefab, centerPosition, Quaternion.identity, transform);
+
+        HexTile tile = hex.GetComponent<HexTile>();
+        tile.Init(x, z, HexSize, Orientation);
+
+        tileMap[new Vector2Int(x, z)] = tile;
+    }
+
+    public HexTile GetHexTile(int x, int z)
+    {
+        tileMap.TryGetValue(new Vector2Int(x, z), out HexTile tile);
+        return tile;
     }
 
     private void OnDrawGizmos()

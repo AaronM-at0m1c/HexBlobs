@@ -9,7 +9,9 @@ public class HexTile : MonoBehaviour
     private Color defaultColor = Color.white;
 
     [SerializeField] private Color highlightColor = Color.yellow;
-    [SerializeField] private Color selectedColor = Color.green;
+    [SerializeField] private Color player1Color = Color.red;
+    [SerializeField] private Color player2Color = Color.blue;
+    [SerializeField] private Color neutralColor = Color.white;
 
     private bool isSelected = false;
 
@@ -29,6 +31,29 @@ public class HexTile : MonoBehaviour
 
         PolygonCollider2D col = gameObject.AddComponent<PolygonCollider2D>();
         col.SetPath(0, corners2D);
+        SetOwner(PlayerId.None);
+    }
+
+    public void SetOwner(PlayerId owner)
+    {
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer == null)
+            return;
+
+        switch (owner)
+        {
+            case PlayerId.Player1:
+                spriteRenderer.color = player1Color;
+                break;
+            case PlayerId.Player2:
+                spriteRenderer.color = player2Color;
+                break;
+            default:
+                spriteRenderer.color = neutralColor;
+                break;
+        }
     }
 
     public void SetSelected(bool selected)
@@ -37,8 +62,6 @@ public class HexTile : MonoBehaviour
 
         if (spriteRenderer == null)
             return;
-
-        spriteRenderer.color = selected ? selectedColor : defaultColor;
     }
 
     public void SetHover(bool hovering)

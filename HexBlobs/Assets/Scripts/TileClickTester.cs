@@ -50,7 +50,7 @@ public class TileClickTester : MonoBehaviour
 
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.OnTileSelected(hoveredTile);
+                GameManager.Instance.OnTileClicked(hoveredTile);
             }
             else
             {
