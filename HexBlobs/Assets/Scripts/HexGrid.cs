@@ -1,15 +1,32 @@
 using UnityEngine;
 
-// Thank you to Soul's Game Dev Journey on youtube for their hex-map how-to video
 public class HexGrid : MonoBehaviour
 {
-    [field:SerializeField] public HexOrientation Orientation { get; private set; }
-    [field:SerializeField] public int Width { get; private set; }
-    [field:SerializeField] public int Height { get; private set; }
-    [field:SerializeField] public float HexSize { get; private set; }
-    [field:SerializeField] public GameObject HexPrefab { get; private set; }
+    [field: SerializeField] public HexOrientation Orientation { get; private set; }
+    [field: SerializeField] public int Width { get; private set; }
+    [field: SerializeField] public int Height { get; private set; }
+    [field: SerializeField] public float HexSize { get; private set; }
+    [field: SerializeField] public GameObject HexPrefab { get; private set; }
 
-private void OnDrawGizmos()
+    private void Start()
+    {
+        for (int z = 0; z < Height; z++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                CreateHex(x, z);
+            }
+        }
+    }
+
+    private void CreateHex(int x, int z)
+    {
+        Vector3 centerPosition = HexMetrics.Center(HexSize, x, z, Orientation) + transform.position;
+        GameObject tile = Instantiate(HexPrefab, centerPosition, Quaternion.identity, transform);
+        tile.GetComponent<HexTile>().Init(x, z, HexSize, Orientation);
+    }
+
+    private void OnDrawGizmos()
     {
         for (int z = 0; z < Height; z++)
         {
@@ -26,5 +43,4 @@ private void OnDrawGizmos()
             }
         }
     }
-
 }
