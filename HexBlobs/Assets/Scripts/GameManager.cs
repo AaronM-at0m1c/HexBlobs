@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,6 +9,9 @@ public class GameManager : MonoBehaviour
 
     private HexGrid grid;
     private HexTile currentHoverTile;
+
+    public event Action<int> OnBoardChanged;
+    private int score = 0;
 
 
     private void Awake()
@@ -80,6 +84,7 @@ public class GameManager : MonoBehaviour
                 viewTile.SetOwner(tileState.Owner);
             }
         }
+        OnBoardChanged?.Invoke(score);
     }
 
     private void EndTurn()
