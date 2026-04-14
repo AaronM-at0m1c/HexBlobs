@@ -49,8 +49,8 @@ public class GameManager : NetworkBehaviour
         Board.GetTile(0, 0).Owner = PlayerId.Player1;
         Board.GetTile(1, 0).Owner = PlayerId.Player1;
 
-        Board.GetTile(6, 4).Owner = PlayerId.Player2;
-        Board.GetTile(7, 4).Owner = PlayerId.Player2;
+        Board.GetTile(9, 4).Owner = PlayerId.Player2;
+        Board.GetTile(8, 4).Owner = PlayerId.Player2;
     }
 
     public void OnTileClicked(HexTile clickedTile)
