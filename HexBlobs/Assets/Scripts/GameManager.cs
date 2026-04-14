@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
+using Unity.Netcode;
+using UnityEditor.PackageManager;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
     public PlayerId CurrentPlayer { get; private set; } = PlayerId.Player1;
@@ -12,6 +14,8 @@ public class GameManager : MonoBehaviour
 
     public event Action<int> OnBoardChanged;
     private int score = 0;
+    private NetworkVariable<int> lastMoveX = new NetworkVariable<int>(-1);
+    private NetworkVariable<int> lastMoveZ = new NetworkVariable<int>(-1);
 
 
     private void Awake()
@@ -51,27 +55,45 @@ public class GameManager : MonoBehaviour
 
     public void OnTileClicked(HexTile clickedTile)
     {
-        Vector2Int target = new(clickedTile.X, clickedTile.Z);
-        MoveDecision decision = BlobRules.ClassifyMove(Board, CurrentPlayer, target);
+        if (!IsServer) return;
 
-        switch (decision.MoveType)
-        {
-            case MoveType.Flip:
-                new FlipCommand(CurrentPlayer, target).Execute(Board);
-                EndTurn();
-                RefreshVisuals();
-                break;
+        lastMoveX.Value = clickedTile.X;
+        lastMoveZ.Value = clickedTile.Z;
 
-            case MoveType.Jump:
-                new JumpCommand(CurrentPlayer, decision.JumpOffset).Execute(Board);
-                EndTurn();
-                RefreshVisuals();
-                break;
+    }
 
-            default:
-                Debug.Log("Invalid move.");
-                break;
-        }
+    private void ExecuteMove(int x, int z)
+{
+    HexTile tile = grid.GetHexTile(x, z);
+    if (tile == null) return;
+
+    Vector2Int target = new(x, z);
+    MoveDecision decision = BlobRules.ClassifyMove(Board, CurrentPlayer, target);
+
+    switch (decision.MoveType)
+    {
+        case MoveType.Flip:
+            new FlipCommand(CurrentPlayer, target).Execute(Board);
+            EndTurn();
+            RefreshVisuals();
+            break;
+
+        case MoveType.Jump:
+            new JumpCommand(CurrentPlayer, decision.JumpOffset).Execute(Board);
+            EndTurn();
+            RefreshVisuals();
+            break;
+
+        default:
+            Debug.Log("Invalid move.");
+            break;
+    }
+}
+
+     public override void OnNetworkSpawn()
+    {
+        lastMoveX.OnValueChanged += (oldVal, newVal) => ExecuteMove(lastMoveX.Value, lastMoveZ.Value);
+        lastMoveZ.OnValueChanged += (oldVal, newVal) => ExecuteMove(lastMoveX.Value, lastMoveZ.Value);
     }
 
     public void RefreshVisuals()
