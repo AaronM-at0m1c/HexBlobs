@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Thank you to Soul's Game Dev Journey on youtube for their Hex Tile how-to videos
 public static class BlobRules
 {
     public static int GetMinDistanceToBlob(List<TileState> blobTiles, Vector2Int target)

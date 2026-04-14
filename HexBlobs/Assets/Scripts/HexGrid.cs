@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+// Thank you to Soul's Game Dev Journey on youtube for their Hex Tile how-to videos
+
 public class HexGrid : MonoBehaviour
 {
     [field: SerializeField] public HexOrientation Orientation { get; private set; }

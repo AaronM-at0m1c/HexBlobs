@@ -1,4 +1,7 @@
 using UnityEngine;
+
+// Thank you to Soul's Game Dev Journey on youtube for their Hex Tile how-to videos
+
 public static class HexMetrics
 {
     public static float OuterRadius(float hexSize)

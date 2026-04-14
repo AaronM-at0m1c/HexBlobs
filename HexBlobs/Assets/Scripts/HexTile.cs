@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Thank you to Soul's Game Dev Journey on youtube for their Hex Tile how-to videos
+
 public class HexTile : MonoBehaviour
 {
     public int X { get; private set; }
@@ -54,6 +56,8 @@ public class HexTile : MonoBehaviour
                 spriteRenderer.color = neutralColor;
                 break;
         }
+
+        defaultColor = spriteRenderer.color;
     }
 
     public void SetSelected(bool selected)
