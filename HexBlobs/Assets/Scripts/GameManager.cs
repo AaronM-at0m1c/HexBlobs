@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEditor.PackageManager;
+using System.IO.Compression;
 
 public class GameManager : NetworkBehaviour
 {
@@ -16,6 +17,9 @@ public class GameManager : NetworkBehaviour
     private int score = 0;
     private NetworkVariable<int> lastMoveX = new NetworkVariable<int>(-1);
     private NetworkVariable<int> lastMoveZ = new NetworkVariable<int>(-1);
+
+    private ulong player1ClientId;
+    private ulong player2ClientId;
 
 
     private void Awake()
@@ -53,13 +57,30 @@ public class GameManager : NetworkBehaviour
         Board.GetTile(8, 4).Owner = PlayerId.Player2;
     }
 
+    // Thank you to Code Monkey on youtube for teaching me RPCs
     public void OnTileClicked(HexTile clickedTile)
     {
-        if (!IsServer) return;
+        TileClickedRpc(clickedTile.X, clickedTile.Z);
+    }
 
-        lastMoveX.Value = clickedTile.X;
-        lastMoveZ.Value = clickedTile.Z;
+    [Rpc(SendTo.Server)]
+    private void TileClickedRpc(int x, int z, RpcParams rpcParams = default)
+    {
+        ulong senderId = rpcParams.Receive.SenderClientId;
+        
+        if (senderId == player1ClientId && CurrentPlayer == PlayerId.Player1)
+        {
+            lastMoveX.Value = x;
+            lastMoveZ.Value = z;
 
+        } else if (senderId == player2ClientId && CurrentPlayer == PlayerId.Player2)
+        {
+            lastMoveX.Value = x;
+            lastMoveZ.Value = z;
+        } else
+        {
+            Debug.Log("Not this player's turn");
+        }
     }
 
     private void ExecuteMove(int x, int z)
@@ -94,6 +115,13 @@ public class GameManager : NetworkBehaviour
     {
         lastMoveX.OnValueChanged += (oldVal, newVal) => ExecuteMove(lastMoveX.Value, lastMoveZ.Value);
         lastMoveZ.OnValueChanged += (oldVal, newVal) => ExecuteMove(lastMoveX.Value, lastMoveZ.Value);
+
+        player1ClientId = NetworkManager.ServerClientId;
+        NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
+        {
+            player2ClientId = id;
+        };
+
     }
 
     public void RefreshVisuals()
