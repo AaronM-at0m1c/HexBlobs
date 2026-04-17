@@ -119,10 +119,27 @@ public static class BlobRules
             }
         }
 
+        
+
         return new MoveDecision
         {
             MoveType = MoveType.Invalid,
             Target = target
         };
     }
+
+    public static bool HasAnyValidMove(BoardState board, PlayerId player)
+{
+    foreach (var tile in board.AllTiles())
+    {
+        if (tile.Owner != PlayerId.None) continue;
+
+        Vector2Int target = new(tile.X, tile.Z);
+        MoveDecision decision = ClassifyMove(board, player, target);
+
+        if (decision.MoveType != MoveType.Invalid)
+            return true;
+    }
+    return false;
+}
 }

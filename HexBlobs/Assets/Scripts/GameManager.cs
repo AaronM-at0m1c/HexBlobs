@@ -3,6 +3,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEditor.PackageManager;
 using System.IO.Compression;
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
@@ -144,7 +145,23 @@ public class GameManager : NetworkBehaviour
             : PlayerId.Player1;
 
         Debug.Log("Current player: " + CurrentPlayer);
+
+        if (!BlobRules.HasAnyValidMove(Board, CurrentPlayer))
+    {
+        Debug.Log($"{CurrentPlayer} has no valid moves. Game over!");
+        HandleGameOver();
     }
+    }
+
+    private void HandleGameOver()
+{
+    PlayerId winner = CurrentPlayer == PlayerId.Player1
+        ? PlayerId.Player2
+        : PlayerId.Player1;
+
+    Debug.Log($"{winner} wins!");
+    SceneManager.LoadScene("GameOverScene");
+}
 
     public void OnTileSelected(HexTile tile)
     {
