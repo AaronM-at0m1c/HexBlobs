@@ -13,6 +13,11 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene("GameScene2");
     }
 
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
     public void LoadMatchHistory()
     {
         SceneManager.LoadScene("MatchHistory");

@@ -49,7 +49,7 @@ public class DatabaseManager : MonoBehaviour
     void CreateFinalScoresTable()
     {
         dbConnection.CreateTable<FinalScore>();
-        Debug.Log("High Scores table created at: " + dbPath);
+        Debug.Log("Match History table created at: " + dbPath);
     }
     
     public void SaveFinalScore(int player1Score, int player2Score)
@@ -64,13 +64,11 @@ public class DatabaseManager : MonoBehaviour
         Debug.Log("Final Score Saved");
     }
     
-    public List<FinalScore> GetTopFinalScores(int count)
-    {
-        List<FinalScore> topScores = dbConnection.Table<FinalScore>()
-            .OrderByDescending(score => score.Player2Score)
-            .Take(count)
-            .ToList();
-        
-        return topScores;
-    }
+    public List<FinalScore> GetRecentMatches(int count)
+{
+    return dbConnection.Table<FinalScore>()
+        .OrderByDescending(score => score.Id)
+        .Take(count)
+        .ToList();
+}
 }
