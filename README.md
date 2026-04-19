@@ -50,10 +50,12 @@ Win control of the board vs. the other player. The player with the most tiles at
 
 ## Known Issues
 - Jump/Flip/Invalid move logic is currently imperfect. As a result, occasionally moves behave in unexpected ways.
+- Large map is currently incomplete, though it just needs to be wired up and it should work fine.
 
 ## Future Enhancements
 - Removal of current move bugs
 - Implent new "special" moves
+- Finish larger map implementation
 
 ## Technologies Used
 
